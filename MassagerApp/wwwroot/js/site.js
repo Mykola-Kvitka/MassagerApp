@@ -7,3 +7,12 @@
     }
 
 }
+
+function showHideNewCommentForm(id) {
+    var element = document.getElementById(id)
+    if (element.style.display == 'initial') {
+        element.style.display = 'none'
+    } else {
+        element.style.display = 'initial'
+    }
+}

@@ -55,7 +55,7 @@ namespace MassagerApp.PL.Controllers
 
              _chatService.CreateAsync(requestVm.UserIds);
 
-            return Redirect("~/chat/Index");
+            return Redirect("~/chat");
         }
     }
 }

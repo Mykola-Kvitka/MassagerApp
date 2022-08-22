@@ -34,21 +34,18 @@ namespace MassagerApp.PL.Controllers
             var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
 
             var chatMassage =  await _massageService.GetPagedAsync(id,userId, page);
+
+            var massagePage = new MassagePagedViewModel() { 
+                Massages = _mapper.Map<IEnumerable<Massages>, 
+                IEnumerable<MassageViewModel>>(chatMassage).OrderBy(a => a.CreateDate),
+                Page = page, 
+                TotalCount = await _massageService.GetCountAsync() };
             
-            return View(_mapper.Map<IEnumerable<Massages>, IEnumerable<MassageViewModel>>(chatMassage));
-        }
-
-        [HttpGet("massage/create")]
-        public ActionResult Create()
-        {
-            ViewBag.Users = new SelectList(_mapper.Map<List<UserEntity>>(
-                       _userManager.Users.ToList()), "Id", "UserName");
-
-            return View();
+            return View(massagePage);
         }
 
         [HttpPost("massage/create")]
-        public async Task<ActionResult> CreateAsync(MassageViewModel requestVm)
+        public async Task<ActionResult> Create(MassageViewModel requestVm)
         {
             var user = (await _userManager.GetUserAsync(HttpContext.User));
 
@@ -79,18 +76,21 @@ namespace MassagerApp.PL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
         {
+            var red = (await _massageService.GetAsync(id)).ChatId;
             await _massageService.DeleteAsync(id);
 
-            return Redirect("~/massage/");
+            return Redirect("~/massage/" + red);
         }
 
         [HttpPost("massage/softdelete/{id}")]
         [ValidateAntiForgeryToken]
-        public IActionResult SoftDelete(Guid id)
+        public async Task<IActionResult> SoftDelete(Guid id)
         {
+            var red = (await _massageService.GetAsync(id)).ChatId;
+
             _massageService.SoftDeleteAsync(id);
 
-            return Redirect("~/massage/");
+            return Redirect("~/massage/" + red);
         }
 
     }

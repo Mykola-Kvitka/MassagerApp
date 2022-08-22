@@ -14,6 +14,8 @@ namespace MassagerApp.PL.ViewModels
         public int TotalCount { get; set; }
 
         public IEnumerable<MassageViewModel> Massages { get; set; }
+        
+        public MassageViewModel newMassage { get; set; }
 
     }
 }

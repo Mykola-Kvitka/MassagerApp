@@ -1,4 +1,5 @@
 ﻿@model MassagerApp.PL.ViewModels.MassagePagedViewModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <div class="list-group">
     @foreach (var item in Model.Massages)
@@ -23,40 +24,44 @@
                 </div>
                 @if (@item.UserName == User.Identity.Name)
                 {
-                <div class="reply-container">
-                    <form method="post" asp-action="Delete" asp-route-id="@item.MassegeId" class="btn-group-sm">
-                        <input type="hidden" asp-for="@item.MassegeId" />
-                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Delete for everyone?')" />
-                    </form>
-                </div>
-                <div class="reply-container">
-                    <form method="post" asp-action="SoftDelete" asp-route-id="@item.MassegeId" class="btn-group-sm">
-                        <input type="hidden" asp-for="@item.MassegeId" />
-                        <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Delete for you?')" />
-                    </form>
-                </div>
+                    <div class="reply-container">
+                        <form method="post" asp-action="Delete" asp-route-id="@item.MassegeId" class="btn-group-sm">
+                            <input type="hidden" asp-for="@item.MassegeId" />
+                            <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Delete for everyone?')" />
+                        </form>
+                    </div>
+                    <div class="reply-container">
+                        <form method="post" asp-action="SoftDelete" asp-route-id="@item.MassegeId" class="btn-group-sm">
+                            <input type="hidden" asp-for="@item.MassegeId" />
+                            <input type="submit" value="Delete" class="btn btn-danger" onclick="return confirm('Delete for you?')" />
+                        </form>
+                    </div>
                 }
             </div>
         </div>
 
     }
 
-    <div class="mb-3">
-        <label for="exampleFormControlTextarea1" class="form-label">Example textarea</label>
-        <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
-    </div>
+    <form style="display: initial;" id="newCommentForm" method="post" action="~/massage/create">
+        <input type="hidden" name="ChatId" value="@Model.Massages.FirstOrDefault().ChatId" />
+        <input class="form-control" name="Massage" placeholder="Input your massage..." />
+        <input type="submit" class="btn btn-success" value="Add" />
+    </form>
+
+
 
 </div>
-<div class="btn-group" role="group" aria-label="Page">
-    @if (Model.Page > 1)
-    {
-        <a type="button"
-           href="@Url.Action("Index", "Massage", new { id = Model.Massages.FirstOrDefault().ChatId, page = Model.Page - 1 })"
-           class="btn btn-outline-primary">Previous</a>}
+    <div class="btn-group" role="group" aria-label="Page">
+        @if (Model.Page > 1)
+        {
+            <a type="button"
+               href="@Url.Action("Index", "Massage", new { id = Model.Massages.FirstOrDefault().ChatId, page = Model.Page - 1 })"
+               class="btn btn-outline-primary">Previous</a>}
 
-    @if (Model.TotalCount > Model.PageSize * Model.Page)
-    {
-        <a type="button"
-           href="@Url.Action("Index", "Massage", new { id = Model.Massages.FirstOrDefault().ChatId,page = Model.Page + 1})"
-           class="btn btn-primary">Next</a>}
+        @if (Model.TotalCount > Model.PageSize * Model.Page)
+        {
+            <a type="button"
+               href="@Url.Action("Index", "Massage", new { id = Model.Massages.FirstOrDefault().ChatId,page = Model.Page + 1})"
+               class="btn btn-primary">Next</a>}
+    </div>
 </div>

@@ -48,6 +48,12 @@ namespace MassagerApp.BLL.Services
             return _mapper.Map<MassageEntity, Massages>(result);
         }
 
+        public async Task<int> GetCountAsync()
+        {
+            return await _unitOfWork.Massages.GetCountAsync();
+        }
+
+
         public async Task<IEnumerable<Massages>> GetPagedAsync(Guid ChatId, string userId, int page = 1, int pageSize = 20)
         {
             var requst = await FindAsync(a => a.ChatId == ChatId);
