@@ -29,11 +29,12 @@ namespace MassagerApp.PL.Controllers
         }
 
         [HttpGet("massage/{id}")]
-        public async Task<ActionResult> Index(Guid id)
+        public async Task<ActionResult> Index(Guid id, int page = 1)
         {
-            var user = (await _userManager.GetUserAsync(HttpContext.User)).Id;
-           var chatMassage =  await _massageService.GetPagedAsync(id);
+            var userId = (await _userManager.GetUserAsync(HttpContext.User)).Id;
 
+            var chatMassage =  await _massageService.GetPagedAsync(id,userId, page);
+            
             return View(_mapper.Map<IEnumerable<Massages>, IEnumerable<MassageViewModel>>(chatMassage));
         }
 
@@ -49,13 +50,49 @@ namespace MassagerApp.PL.Controllers
         [HttpPost("massage/create")]
         public async Task<ActionResult> CreateAsync(MassageViewModel requestVm)
         {
-            var user = (await _userManager.GetUserAsync(HttpContext.User)).Id;
-            requestVm.OwnerId = user;
+            var user = (await _userManager.GetUserAsync(HttpContext.User));
+
+            requestVm.OwnerId = user.Id;
+            requestVm.UserName = user.UserName;
+
+            await _massageService.CreateAsync(_mapper.Map<MassageViewModel,Massages>(requestVm));
+
+            return Redirect("~/massage/" + requestVm.ChatId);
+        }      
+        
+        [HttpPost("massage/replay")]
+        public async Task<ActionResult> ReplayAsync(MassageViewModel requestVm)
+        {
+            var user = (await _userManager.GetUserAsync(HttpContext.User));
+
+            requestVm.Massage = "@" + requestVm.UserName + " " + requestVm.Massage;
+
+            requestVm.OwnerId = user.Id;
+            requestVm.UserName = user.UserName;
 
             await _massageService.CreateAsync(_mapper.Map<MassageViewModel,Massages>(requestVm));
 
             return Redirect("~/massage/" + requestVm.ChatId);
         }
+
+        [HttpPost("massage/delete/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _massageService.DeleteAsync(id);
+
+            return Redirect("~/massage/");
+        }
+
+        [HttpPost("massage/softdelete/{id}")]
+        [ValidateAntiForgeryToken]
+        public IActionResult SoftDelete(Guid id)
+        {
+            _massageService.SoftDeleteAsync(id);
+
+            return Redirect("~/massage/");
+        }
+
     }
 
 }

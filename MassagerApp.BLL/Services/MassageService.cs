@@ -48,11 +48,13 @@ namespace MassagerApp.BLL.Services
             return _mapper.Map<MassageEntity, Massages>(result);
         }
 
-        public async Task<IEnumerable<Massages>> GetPagedAsync(Guid ChatId,int page = 1, int pageSize = 20)
+        public async Task<IEnumerable<Massages>> GetPagedAsync(Guid ChatId, string userId, int page = 1, int pageSize = 20)
         {
             var requst = await FindAsync(a => a.ChatId == ChatId);
 
             requst.OrderByDescending(a => a.CreateDate);
+
+            var requstR = requst.Where(a => !a.ISDeleted && a.OwnerId == userId);
 
             var amountToSkip = (page - 1) * pageSize;
             return requst.Skip(amountToSkip).Take(pageSize);

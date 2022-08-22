@@ -14,5 +14,7 @@ namespace MassagerApp.DAL.Models
         public Guid ChatId { get; set; }
         [MaxLength(64)]
         public string UserId { get; set; }
+        [MaxLength(64)]
+        public string UserName { get; set; }
    }
 }

@@ -13,5 +13,7 @@ namespace MassagerApp.BLL.Models
         public Guid ChatId { get; set; }
         [MaxLength(64)]
         public string UserId { get; set; }
-   }
+        public string UserName { get; set; }
+
+    }
 }
